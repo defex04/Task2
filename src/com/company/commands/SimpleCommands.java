@@ -1,15 +1,14 @@
 package com.company.commands;
 
-import java.util.List;
+import java.io.IOException;
 
 public interface SimpleCommands {
 
-    void rename();
-    void remove();
+    void rename(String oldName, String newName);
+    void remove(String name);
 
-    void cat(String name);
-    void size();
+    void cat(String name) throws IOException;
+    void size(String name) throws IOException;
 
-    List<String> ls();
-    List<String> sort();
+    void ls(String key) throws IOException;
 }

@@ -2,8 +2,10 @@ package com.company;
 
 import com.company.commands.ConsoleCommands;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,11 +14,13 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
 
-        String test1 = "ls -l";
-        String test2 = "cat  filename.txt";
-        String test3 = "move file1.txt file2.txt";
+        CurrentPath.currentPath = Paths.get("virtualDisk");
+
+        String test1 = "ls -all";
+        String test2 = "size  test.txt";
+        String test3 = "rename test2.txt test3.txt";
 
         String commandFormat = "([a-zA-Z][a-zA-Z0-9]*)";
         String argumentFormat = "([a-zA-Z0-9]*[\\.]?[a-zA-Z0-9]*)";
@@ -29,10 +33,9 @@ public class Main {
 
         String expression = oneArgumentCommand + "|" + twoArgumentCommand + "|" + commandWithKey;
         Pattern expressionPattern = Pattern.compile(expression);
-        Matcher matcher = expressionPattern.matcher(test2);
+        Matcher matcher = expressionPattern.matcher(test3);
 
         List<String> arguments = new ArrayList<>();
-
 
         if (matcher.find()) {
 
