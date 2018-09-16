@@ -2,7 +2,6 @@ package com.company;
 
 import com.company.commands.ConsoleCommands;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
@@ -15,7 +14,7 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
+            throws ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 
         CurrentPath.currentPath = Paths.get("virtualDisk");
 
@@ -39,41 +38,36 @@ public class Main {
             List<String> arguments = new ArrayList<>();
 
             if (matcher.find()) {
-
-                if (matcher.group(1) != null) {
-                    arguments.add(matcher.group(5));
-                    runCommand(matcher.group(3), 1, arguments);
-                    System.out.println("1");
-                } else if (matcher.group(6) != null) {
-                    arguments.add(matcher.group(10));
-                    arguments.add(matcher.group(12));
-                    runCommand(matcher.group(8), 2, arguments);
-                    System.out.println("2");
-
-                } else if (matcher.group(13) != null) {
-                    arguments.add(matcher.group(17));
-                    runCommand(matcher.group(15), 1, arguments);
-                    System.out.println("3");
-
+                try {
+                    if (matcher.group(1) != null) {
+                        arguments.add(matcher.group(5));
+                        runCommand(matcher.group(3), 1, arguments);
+                    } else if (matcher.group(6) != null) {
+                        arguments.add(matcher.group(10));
+                        arguments.add(matcher.group(12));
+                        runCommand(matcher.group(8), 2, arguments);
+                    } else if (matcher.group(13) != null) {
+                        arguments.add(matcher.group(17));
+                        runCommand(matcher.group(15), 1, arguments);
+                    }
+                } catch (NoSuchMethodException e) {
+                    System.err.println("No such command");
                 }
-
             } else {
-                System.out.println("Incorrect command format!");
+                System.err.println("Incorrect command format!");
             }
         }
 
-
     }
 
-    public static void runCommand(String command, int argumentNumber, List<String> arguments)
+    private static void runCommand(String command, int argumentNumber, List<String> arguments)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         Class<?> c = Class.forName("com.company.commands.ConsoleCommands");
         if (argumentNumber == 1) {
             String firstArgument = arguments.get(0);
             Method method = c.getDeclaredMethod(command, String.class);
             method.invoke(new ConsoleCommands(), firstArgument);
-        }
-        else if (argumentNumber == 2) {
+        } else if (argumentNumber == 2) {
             String firstArgument = arguments.get(0);
             String secondArgument = arguments.get(1);
             Method method = c.getDeclaredMethod(command, String.class, String.class);
