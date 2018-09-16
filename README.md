@@ -98,3 +98,4 @@ virtualDisk\test.txt
 ```
 unzip 1.zip
 ```
+![alt text](/Screenshot_2.png)
