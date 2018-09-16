@@ -2,6 +2,6 @@ package com.company.commands;
 
 public interface FileArchiving {
 
-    void archive();
-    void unarhive();
+    void archive(String name);
+    void unarhive(String name);
 }

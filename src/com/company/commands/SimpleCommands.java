@@ -11,4 +11,6 @@ public interface SimpleCommands {
     void size(String name) throws IOException;
 
     void ls(String key) throws IOException;
+
+    void cd(String key);
 }

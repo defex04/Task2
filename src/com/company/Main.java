@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,12 +19,8 @@ public class Main {
 
         CurrentPath.currentPath = Paths.get("virtualDisk");
 
-        String test1 = "ls -all";
-        String test2 = "size  test.txt";
-        String test3 = "rename test2.txt test3.txt";
-
         String commandFormat = "([a-zA-Z][a-zA-Z0-9]*)";
-        String argumentFormat = "([a-zA-Z0-9]*[\\.]?[a-zA-Z0-9]*)";
+        String argumentFormat = "([a-zA-Z0-9]*[\\.]?[\\.]?[\\/]?[a-zA-Z0-9]*)";
         String keyFormat = "([\\-][a-zA-Z0-9]*)";
 
         String oneArgumentCommand = "((^" + commandFormat + "(\\s+)" + argumentFormat + "$))";
@@ -33,27 +30,38 @@ public class Main {
 
         String expression = oneArgumentCommand + "|" + twoArgumentCommand + "|" + commandWithKey;
         Pattern expressionPattern = Pattern.compile(expression);
-        Matcher matcher = expressionPattern.matcher(test3);
 
-        List<String> arguments = new ArrayList<>();
 
-        if (matcher.find()) {
+        while (true) {
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
+            Matcher matcher = expressionPattern.matcher(input);
+            List<String> arguments = new ArrayList<>();
 
-            if (matcher.group(1) != null) {
-                arguments.add(matcher.group(5));
-                runCommand(matcher.group(3), 1, arguments);
-            } else if (matcher.group(6) != null) {
-                arguments.add(matcher.group(10));
-                arguments.add(matcher.group(12));
-                runCommand(matcher.group(8), 2, arguments);
-            } else if (matcher.group(13) != null) {
-                arguments.add(matcher.group(17));
-                runCommand(matcher.group(15), 1, arguments);
+            if (matcher.find()) {
+
+                if (matcher.group(1) != null) {
+                    arguments.add(matcher.group(5));
+                    runCommand(matcher.group(3), 1, arguments);
+                    System.out.println("1");
+                } else if (matcher.group(6) != null) {
+                    arguments.add(matcher.group(10));
+                    arguments.add(matcher.group(12));
+                    runCommand(matcher.group(8), 2, arguments);
+                    System.out.println("2");
+
+                } else if (matcher.group(13) != null) {
+                    arguments.add(matcher.group(17));
+                    runCommand(matcher.group(15), 1, arguments);
+                    System.out.println("3");
+
+                }
+
+            } else {
+                System.out.println("Incorrect command format!");
             }
-
-        } else {
-            System.out.println("Incorrect command format!");
         }
+
 
     }
 

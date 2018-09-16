@@ -5,16 +5,17 @@ import com.company.CurrentPath;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.*;
 
 public class ConsoleCommands implements FileArchiving, SimpleCommands {
 
     @Override
-    public void archive() {
+    public void archive(String name) {
 
     }
 
     @Override
-    public void unarhive() {
+    public void unarhive(String name) {
 
     }
 
@@ -26,8 +27,7 @@ public class ConsoleCommands implements FileArchiving, SimpleCommands {
 
         if (original.exists() & original.isFile()) {
             original.renameTo(newFile);
-        }
-        else {
+        } else {
             System.err.println("No such file");
         }
 
@@ -60,18 +60,49 @@ public class ConsoleCommands implements FileArchiving, SimpleCommands {
 
     @Override
     public void ls(String key) throws IOException {
-        if (key.equals("-d")) {
-            Files.find(CurrentPath.currentPath, 1, (p, bfa) -> bfa.isDirectory()).forEach(System.out::println);
-        }
-        else if (key.equals("-f")) {
-            Files.find(CurrentPath.currentPath, 1, (p, bfa) -> bfa.isRegularFile()).forEach(System.out::println);
-        }
-        //else if (key.equals("-fs")) {
-          //  Files.find(currentPath, 1, (p, bfa) -> p.).forEach(System.out::println);
-        //}
-        else if (key.equals("-all")) {
+
+        switch (key) {
+            case "-d":
+                Files.find(CurrentPath.currentPath, 1, (p, bfa) -> bfa.isDirectory()).forEach(System.out::println);
+                break;
+            case "-f":
+                Files.find(CurrentPath.currentPath, 1, (p, bfa) -> bfa.isRegularFile()).forEach(System.out::println);
+                break;
+            case "-fs":
+                List<Path> fileList = new ArrayList<>();
+                Files.find(CurrentPath.currentPath, 1, (p, bfa) -> bfa.isRegularFile()).forEach(fileList::add);
+                Collections.sort(fileList);
+                for (Path file : fileList) {
+                    System.out.println(file);
+                }
+                break;
+            case "-all":
                 Files.find(CurrentPath.currentPath, 1, (p, bfa) -> true).forEach(System.out::println);
+                break;
         }
     }
 
+    @Override
+    public void cd(String key) {
+        switch (key) {
+            case "..":
+                if (CurrentPath.currentPath.equals(Paths.get("virtualDisk"))) {
+                    System.out.println("virtualDisk is root directory");
+                } else {
+                    CurrentPath.currentPath = Paths.get("../" + CurrentPath.currentPath).normalize();
+                }
+
+
+                break;
+            default:
+                Path path = Paths.get(CurrentPath.currentPath + "/" + key);
+                if (Files.exists(path)) {
+                    CurrentPath.currentPath = path;
+                } else {
+                    System.err.println("No such directory");
+                }
+                break;
+
+        }
+    }
 }
